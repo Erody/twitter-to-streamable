@@ -1,6 +1,7 @@
 const AsyncPolling = require('async-polling');
 const Snoowrap = require('snoowrap');
 const { getVideoUrl } = require('./twitter');
+const request = require('request-promise-native');
 
 const reddit = new Snoowrap({
 	userAgent: 'TwitterToStreamable 2.0.0 - convert twitter videos to streamable',
@@ -34,8 +35,20 @@ async function handleTwitter(tweetUrl) {
 	if(videoUrl){
 		console.log(videoUrl);
 		// upload video to streamable
-		// post comment on reddit with streamable url
+		const streamableUrl = await uploadToStreamable(videoUrl);
+		// on succesful upload
+		if(streamableUrl) {
+			// post comment on reddit with streamable url
+			
+		}
 	}
+}
+
+async function uploadToStreamable(videoUrl) {
+	const url = `https://api.streamable.com/import?url=${videoUrl}`;
+	const res =  await request.get(url);
+	if(res.status !== 1) return;
+	return `https://streamable.com/${res.shortcode}`
 }
 
 const polling = AsyncPolling(getNewSubmissions, 5000);

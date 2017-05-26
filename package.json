@@ -14,7 +14,7 @@
     "mongoose": "^4.10.2",
     "promisify": "0.0.3",
     "pusher-client": "^1.1.0",
-    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4",
     "rockets": "^1.2.4",
     "snoowrap": "^1.14.0",
     "twitter": "^1.7.0"
