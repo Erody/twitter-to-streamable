@@ -9,10 +9,14 @@
   "author": "Immo Struchholz",
   "license": "ISC",
   "dependencies": {
+    "async-polling": "^0.2.1",
     "dotenv": "^4.0.0",
     "mongoose": "^4.10.2",
     "promisify": "0.0.3",
     "pusher-client": "^1.1.0",
-    "rockets": "^1.2.4"
+    "request": "^2.81.0",
+    "rockets": "^1.2.4",
+    "snoowrap": "^1.14.0",
+    "twitter": "^1.7.0"
   }
 }
