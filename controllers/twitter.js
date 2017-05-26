@@ -30,7 +30,7 @@ exports.getVideoUrl = async (url) => {
 };
 
 function getTweetId (url) {
-	const regexp = new RegExp(/(status\/)(\d*)/i)
+	const regexp = new RegExp(/(status\/)(\d*)/i);
 	const match = url.match(regexp);
 	if(match) {
 		return match[2];
