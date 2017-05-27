@@ -11,10 +11,13 @@ mongoose.connection.on('error', (err) => {
 	console.error(`🙅 🚫 🙅 🚫 🙅 🚫 🙅 🚫 → ${err.message}`);
 });
 
+// import all of our models
+require('./models/Comment');
+require('./models/Submission');
+
 require('./controllers/reddit');
 
-// todo do the polling in a polling controller, not in reddt controller
 // todo post the comments with TwitterToStreamable, not testbottest777
-// todo database implementation - save a bunch of metadata (save every comment with createdAt, subreddit, title (of submission), upvotes/downvotes of submission (initially always 0), upvotes/downvotes of comment (initially always 0)
+// todo retry to upload to streamable (with delay) upon error
 // todo periodically update the metadata (just loop over all comments in the db and get updated data) - probably a seperate application.
 // todo maybe create a website for this bot (live updating metadata, latest comments etc)
