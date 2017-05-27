@@ -2,33 +2,34 @@ const AsyncPolling = require('async-polling');
 const Snoowrap = require('snoowrap');
 const { getVideoUrl } = require('./twitter');
 const {uploadToStreamable } = require('./streamable');
-const { createComment } = require('../helpers/comment');
+const { createComment, saveMetadata } = require('../helpers');
 const mongoose = require('mongoose');
 const Comment = mongoose.model('Comment');
-const Submission = mongoose.model('Submission');
 
 const reddit = new Snoowrap({
-	userAgent: 'TwitterToStreamable 2.0.0 - convert twitter videos to streamable',
+	userAgent: 'TwitterToStreamable 2.0.0 - poll subreddits',
 	clientId: process.env.REDDIT_KEY,
 	clientSecret: process.env.REDDIT_SECRET,
 	username: process.env.REDDIT_USERNAME,
 	password: process.env.REDDIT_PASS
 });
+reddit.config({
+	continueAfterRatelimitError: true,
+});
 
 let oldRes = [];
 async function getNewSubmissions(end) {
-	// new submissions on all subreddits (test /r/all, otherwise just take a list of popular ones)
-	// check which submissions are new
-		// save submissions on each request
-		// check which submissions weren't in the previous request
-		// only send new submissions to end()
 	reddit
+		// new submissions on all subreddits (test /r/all, otherwise just take a list of popular ones)
 		.getSubreddit('testingMyBotsAndStuff')
 		// .getSubreddit('all')
 		.getNew()
 		.then(res => {
+			// check which submissions are new
 			const newRes = difference(oldRes, res, 'name');
+			// only send new submissions to end()
 			end(null, newRes);
+			// save old response to check against
 			oldRes = res;
 		})
 		.catch(err => {
@@ -51,7 +52,7 @@ async function handleTwitter(item) {
 	// check if tweet contained video url
 	if(videoUrl){
 		// upload video to streamable
-		let streamableUrl = await uploadToStreamable(videoUrl);
+		let streamableUrl = await uploadToStreamable(item.url);
 		// on succesful upload
 		if(streamableUrl) {
 			// post comment on reddit with streamable url
@@ -79,25 +80,6 @@ async function handleLinkInUrl(item) {
 	}
 }
 
-function saveMetadata (comment, item) {
-	const { name, title, subreddit, created_utc, permalink, ups } = item;
-	const submission = new Submission({
-		name,
-		title,
-		subreddit: subreddit.display_name,
-		upvotes: ups,
-		created: new Date(created_utc * 1000),
-		permalink
-	});
-	comment.submission = submission;
-	comment
-		.save()
-		.catch(err => console.error(err));
-	submission
-		.save()
-		.catch(err => console.error(err));
-}
-
 async function postComment(streamableUrl, item) {
 	const { id } = item;
 	const commentText = createComment(streamableUrl, item);
@@ -109,7 +91,7 @@ async function postComment(streamableUrl, item) {
 	});
 }
 
-const polling = AsyncPolling(getNewSubmissions, 5000);
+const polling = AsyncPolling(getNewSubmissions, 10000);
 
 polling.on('run', () => console.log('Bot is now running...'));
 polling.on('start', () => console.log('Polling...'));
@@ -118,13 +100,20 @@ polling.on('result', res => {
 	res.forEach(item => {
 		const {over_18, domain, title, subreddit_name_prefixed } = item;
 		if(over_18) return;
-		console.log(domain);
 		switch(domain) {
 			case 'twitter.com':
 				// handle twitter
 				handleTwitter(item);
 				break;
 			case 'my.mixtape.moe':
+				// handle mixtape
+				handleLinkInUrl(item);
+				break;
+			case 'track5.mixtape.moe':
+				// handle mixtape
+				handleLinkInUrl(item);
+				break;
+			case 'track4.mixtape.moe':
 				// handle mixtape
 				handleLinkInUrl(item);
 				break;

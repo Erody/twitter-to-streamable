@@ -11,5 +11,21 @@ exports.uploadToStreamable = async (videoUrl) => {
 		return `https://streamable.com/${res.shortcode}`
 	} catch (err) {
 		console.error(`[Streamable Error] ${err.message}`);
+		console.log('retrying');
+		return await retry(this.uploadToStreamable, videoUrl, 5000);
 	}
 };
+
+function retry(fnc, param, timeout) {
+	return new Promise((resolve, reject) => {
+		setTimeout(async () => {
+			try {
+				const result = await fnc(param);
+				resolve(result);
+			} catch(err) {
+				reject(err);
+			}
+
+		}, timeout)
+	})
+}
