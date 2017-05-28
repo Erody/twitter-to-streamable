@@ -1,8 +1,9 @@
 const AsyncPolling = require('async-polling');
 const Snoowrap = require('snoowrap');
+const URI = require('uri-js');
 const { getVideoUrl } = require('./twitter');
 const {uploadToStreamable } = require('./streamable');
-const { createComment, saveMetadata } = require('../helpers');
+const { createComment, saveMetadata, difference } = require('../helpers');
 const mongoose = require('mongoose');
 const Comment = mongoose.model('Comment');
 
@@ -37,22 +38,13 @@ async function getNewSubmissions(end) {
 		})
 }
 
-// takes 2 arrays of objects and the property to check difference by
-// returns all objects from the new object that aren't in the old object.
-function difference(oldObj, newObj, property) {
-	const names = oldObj.map(obj => obj[property]);
-	return newObj.filter(obj => {
-		return !names.includes(obj[property]);
-	})
-}
-
 async function handleTwitter(item) {
 	// get videoUrl from tweetUrl
 	const videoUrl = await getVideoUrl(item.url);
 	// check if tweet contained video url
 	if(videoUrl){
 		// upload video to streamable
-		let streamableUrl = await uploadToStreamable(item.url);
+		const streamableUrl = await uploadToStreamable(item.url);
 		// on succesful upload
 		if(streamableUrl) {
 			// post comment on reddit with streamable url
@@ -68,7 +60,7 @@ async function handleLinkInUrl(item) {
 	// check if link is video
 	if(item.url.endsWith('.mp4')) {
 		// upload video to streamable
-		let streamableUrl = await uploadToStreamable(item.url);
+		const streamableUrl = await uploadToStreamable(item.url);
 		// on succesful upload
 		if(streamableUrl) {
 			// post comment on reddit with streamable url
@@ -81,9 +73,8 @@ async function handleLinkInUrl(item) {
 }
 
 async function postComment(streamableUrl, item) {
-	const { id } = item;
 	const commentText = createComment(streamableUrl, item);
-	const comment = await reddit.getSubmission(id).reply(commentText);
+	const comment = await item.reply(commentText);
 	const { name, ups } = comment;
 	return new Comment({
 		name,
@@ -91,12 +82,49 @@ async function postComment(streamableUrl, item) {
 	});
 }
 
-const polling = AsyncPolling(getNewSubmissions, 10000);
+function getMessages(end) {
+	reddit
+		.getInbox({filter: 'unread'})
+		.then(messages => end(null, messages))
+		.catch(err => end(err));
+}
 
-polling.on('run', () => console.log('Bot is now running...'));
-polling.on('start', () => console.log('Polling...'));
-polling.on('error', err => console.error(err));
-polling.on('result', res => {
+async function handleNewMessage(item) {
+	const { body, name } = item;
+	const urls = getUrlsFromMessageBody(body);
+	urls.forEach(async (url) => {
+		const components = URI.parse(url);
+		const domain = components.host;
+		if(domain === 'twitter.com') {
+			const videoUrl = await getVideoUrl(url);
+			if(videoUrl) {
+				const streamableUrl = await uploadToStreamable(videoUrl);
+				await postComment(streamableUrl, item);
+				item.markAsRead();
+				console.log(`Replied - ${item.name}`);
+			}
+		} else if(domain === 'my.mixtape.moe' || domain === 'u.nya.is') {
+			const streamableUrl = await uploadToStreamable(url);
+			await postComment(streamableUrl, item);
+			item.markAsRead();
+			console.log(`Replied - ${item.name}`);
+		}
+	});
+}
+
+function getUrlsFromMessageBody(body) {
+	// search for url
+	const regex = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm;
+	return body.match(regex);
+}
+
+const submissionPolling = AsyncPolling(getNewSubmissions, 10000); // 10 seconds
+const messagePolling = AsyncPolling(getMessages, 120000); // 2 minutes
+
+submissionPolling.on('run', () => console.log('Submission polling is running...'));
+submissionPolling.on('start', () => console.log('Polling submissions...'));
+submissionPolling.on('error', err => console.error(err));
+submissionPolling.on('result', res => {
 	res.forEach(item => {
 		const {over_18, domain, title, subreddit_name_prefixed } = item;
 		if(over_18) return;
@@ -127,6 +155,19 @@ polling.on('result', res => {
 		// console.log(`[${subreddit_name_prefixed}] ${title}`)
 	})
 });
-polling.run();
+
+messagePolling.on('run', () => console.log('Message polling is running...'));
+messagePolling.on('start', () => console.log('Polling messages...'));
+messagePolling.on('error', err => console.error(err));
+messagePolling.on('result', res => {
+	res.forEach(item => {
+		console.log('new message');
+		handleNewMessage(item);
+	});
+});
+
+
+messagePolling.run();
+submissionPolling.run();
 
 module.exports = reddit;

@@ -17,6 +17,7 @@
     "request-promise-native": "^1.0.4",
     "rockets": "^1.2.4",
     "snoowrap": "^1.14.0",
-    "twitter": "^1.7.0"
+    "twitter": "^1.7.0",
+    "uri-js": "^3.0.2"
   }
 }
