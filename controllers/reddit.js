@@ -115,6 +115,10 @@ async function handleNewMessage(item) {
 	});
 }
 
+function checkAndRemoveDuplicateComments(inbox) {
+
+}
+
 function getUrlsFromMessageBody(body) {
 	// search for url
 	const regex = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm;
@@ -125,7 +129,7 @@ const submissionPolling = AsyncPolling(getNewSubmissions, 3000); // 2 seconds
 const messagePolling = AsyncPolling(getMessages, 120000); // 2 minutes
 
 submissionPolling.on('run', () => console.log('Submission polling is running...'));
-// submissionPolling.on('start', () => console.log('Polling submissions...'));
+submissionPolling.on('start', () => console.log('Polling submissions...'));
 submissionPolling.on('error', err => console.error(err));
 submissionPolling.on('result', res => {
 	res.forEach(item => {
@@ -160,9 +164,10 @@ submissionPolling.on('result', res => {
 });
 
 messagePolling.on('run', () => console.log('Message polling is running...'));
-// messagePolling.on('start', () => console.log('Polling messages...'));
+messagePolling.on('start', () => console.log('Polling messages...'));
 messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
+	console.log(`Unread messages amount: ${res.length}`);
 	res.forEach(item => {
 		handleNewMessage(item);
 	});
