@@ -20,7 +20,7 @@ reddit.config({
 });
 
 let oldRes = [];
-async function getNewSubmissions(end) {
+function getNewSubmissions(end) {
 	const subreddits = ['soccer', 'videos', 'liverpoolfc', 'all'];
 
 	subreddits.forEach((subreddit, index) => {
@@ -68,13 +68,10 @@ async function handleTwitter(item) {
 		if(streamableUrl) {
 			console.log(streamableUrl);
 			// post comment on reddit with streamable url
-			postComment(streamableUrl, item)
-				.then(res => console.log(`Comment posted`))
-				.catch(err => console.error(err));
-			// const comment = await postComment(streamableUrl, item);
-			// console.log(`Comment posted - ${comment.name}`);
-			// // save submission and comment to database
-			// saveMetadata(comment, item);
+			const comment = await postComment(streamableUrl, item);
+			console.log(`Comment posted - ${comment.name}`);
+			// save submission and comment to database
+			saveMetadata(comment, item);
 		}
 	}
 }
@@ -89,13 +86,10 @@ async function handleLinkInUrl(item) {
 		// on succesful upload
 		if(streamableUrl) {
 			// post comment on reddit with streamable url
-			postComment(streamableUrl, item)
-				.then(res => console.log(`Comment posted`))
-				.catch(err => console.error(err));
-			// const comment = await postComment(streamableUrl, item);
-			// console.log(`Comment posted - ${comment.name}`);
-			// // save submission and comment to database
-			// saveMetadata(comment, item);
+			const comment = await postComment(streamableUrl, item);
+			console.log(`Comment posted - ${comment.name}`);
+			// save submission and comment to database
+			saveMetadata(comment, item);
 		}
 	}
 }
@@ -104,15 +98,13 @@ async function postComment(streamableUrl, item) {
 	console.log('creating comment');
 	const commentText = createComment(streamableUrl, item);
 	console.log(`created commentText: ${!!commentText}`);
-	item.reply(commentText)
-		.catch(err => console.error(err));
-	// const comment = await item.reply(commentText);
-	// console.log(`Comment name: ${comment.name}`);
-	// const { name, ups } = comment;
-	// return new Comment({
-	// 	name,
-	// 	upvotes: ups
-	// });
+	const comment = await item.reply(commentText);
+	console.log(`Comment name: ${comment.name}`);
+	const { name, ups } = comment;
+	return new Comment({
+		name,
+		upvotes: ups
+	});
 }
 
 function getMessages(end) {
