@@ -23,8 +23,8 @@ let oldRes = [];
 async function getNewSubmissions(end) {
 	reddit
 		// new submissions on all subreddits (test /r/all, otherwise just take a list of popular ones)
-		.getSubreddit('testingMyBotsAndStuff')
-		// .getSubreddit('all')
+		// .getSubreddit('testingMyBotsAndStuff')
+		.getSubreddit('all')
 		.getNew()
 		.then(res => {
 			// check which submissions are new
@@ -124,7 +124,7 @@ const submissionPolling = AsyncPolling(getNewSubmissions, 3000); // 2 seconds
 const messagePolling = AsyncPolling(getMessages, 120000); // 2 minutes
 
 submissionPolling.on('run', () => console.log('Submission polling is running...'));
-submissionPolling.on('start', () => console.log('Polling submissions...'));
+// submissionPolling.on('start', () => console.log('Polling submissions...'));
 submissionPolling.on('error', err => console.error(err));
 submissionPolling.on('result', res => {
 	res.forEach(item => {
@@ -159,7 +159,7 @@ submissionPolling.on('result', res => {
 });
 
 messagePolling.on('run', () => console.log('Message polling is running...'));
-messagePolling.on('start', () => console.log('Polling messages...'));
+// messagePolling.on('start', () => console.log('Polling messages...'));
 messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
 	res.forEach(item => {
