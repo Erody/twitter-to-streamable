@@ -15,6 +15,7 @@ const reddit = new Snoowrap({
 	password: process.env.REDDIT_PASS
 });
 reddit.config({
+	requestDelay: 1000,
 	continueAfterRatelimitError: true,
 });
 
