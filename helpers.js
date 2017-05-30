@@ -23,13 +23,13 @@ exports.saveMetadata = (comment, item) => {
 
 exports.createComment = (streamableUrl, item) => {
 	const { title, name } = item;
-	const footer = `___  \n^This ^message ^was ^created ^by ^a ^bot  \n[Request Mirror](https://www.reddit.com/message/compose?to=testBottest777&subject=Request%20mirror&message=Enter%20your%20urls%20here) | [Creator](https://www.reddit.com/user/eRodY/) | [v2.0.0](https://github.com/Erody/twitter-to-streamable)`;
+	const footer = `___  \n^This ^message ^was ^created ^by ^a ^bot  \n[Request Mirror](https://www.reddit.com/message/compose?to=testBottest777&subject=Request%20mirror&message=Enter%20your%20urls%20here.%20It%20can%20take%20up%20to%202%20minutes%20before%20you%20receive%20a%20reply.) | [Creator](https://www.reddit.com/user/eRodY/) | [v2.0.0](https://github.com/Erody/twitter-to-streamable)`;
 	if(title && name) {
 		// replying to a top level post
-		return `[Mirror - ${title}](${streamableUrl})  \n${footer}`
+		return `**[Mirror - ${title}](${streamableUrl})**  \n${footer}`
 	} else {
 		// replying to a private message
-		return `[Mirror](${streamableUrl})  \n${footer}`
+		return `**[Mirror](${streamableUrl})**  \n${footer}`
 	}
 
 };

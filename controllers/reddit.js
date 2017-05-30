@@ -15,6 +15,7 @@ const reddit = new Snoowrap({
 	password: process.env.REDDIT_PASS
 });
 reddit.config({
+	requestDelay: 2000,
 	continueAfterRatelimitError: true,
 });
 
@@ -92,6 +93,7 @@ function getMessages(end) {
 async function handleNewMessage(item) {
 	const { body, name } = item;
 	const urls = getUrlsFromMessageBody(body);
+	if(!urls.length) return;
 	urls.forEach(async (url) => {
 		const components = URI.parse(url);
 		const domain = components.host;
@@ -118,7 +120,7 @@ function getUrlsFromMessageBody(body) {
 	return body.match(regex);
 }
 
-const submissionPolling = AsyncPolling(getNewSubmissions, 10000); // 10 seconds
+const submissionPolling = AsyncPolling(getNewSubmissions, 3000); // 2 seconds
 const messagePolling = AsyncPolling(getMessages, 120000); // 2 minutes
 
 submissionPolling.on('run', () => console.log('Submission polling is running...'));
@@ -161,7 +163,6 @@ messagePolling.on('start', () => console.log('Polling messages...'));
 messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
 	res.forEach(item => {
-		console.log('new message');
 		handleNewMessage(item);
 	});
 });
