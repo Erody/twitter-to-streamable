@@ -175,7 +175,7 @@ submissionPolling.on('result', res => {
 			default:
 				// handle default
 		}
-		console.log(`[${subreddit_name_prefixed}] ${title}`)
+		// console.log(`[${subreddit_name_prefixed}] ${title}`)
 	})
 });
 
