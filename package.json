@@ -1,6 +1,9 @@
 {
   "name": "twitter-to-streamable",
   "version": "2.0.0",
+  "engines": {
+    "node": "7.10.0"
+  },
   "description": "reddit bot - converts twitter/mixtape/nya videos to streamable",
   "main": "start.js",
   "scripts": {
