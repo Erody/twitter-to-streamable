@@ -93,6 +93,7 @@ function getMessages(end) {
 async function handleNewMessage(item) {
 	const { body, name } = item;
 	const urls = getUrlsFromMessageBody(body);
+	if(!urls) return;
 	if(!urls.length) return;
 	urls.forEach(async (url) => {
 		const components = URI.parse(url);
