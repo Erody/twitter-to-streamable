@@ -31,9 +31,8 @@ async function getNewSubmissions(end) {
 			.getSubreddit(subreddit)
 			.getNew()
 			.then(res => {
-				console.log(`Polling ${subreddit}`);
 				const newRes = difference(oldRes[index], res, 'name');
-				console.log(`New submissions: ${newRes.length}`);
+				console.log(`[${subreddit}] New submissions: ${newRes.length}`);
 				end(null, newRes);
 				oldRes[index] = res;
 			})
@@ -59,6 +58,7 @@ async function getNewSubmissions(end) {
 }
 
 async function handleTwitter(item) {
+	console.log('Attempting to handle twitter link');
 	// get videoUrl from tweetUrl
 	const videoUrl = await getVideoUrl(item.url);
 	// check if tweet contained video url
@@ -77,6 +77,7 @@ async function handleTwitter(item) {
 }
 
 async function handleLinkInUrl(item) {
+	console.log('Attempting to handle mixtape or nya link');
 	// check if link is video
 	if(item.url.endsWith('.mp4')) {
 		// upload video to streamable
