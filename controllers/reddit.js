@@ -21,7 +21,8 @@ reddit.config({
 
 let oldRes = [];
 function getNewSubmissions(end) {
-	const subreddits = ['soccer', 'videos', 'liverpoolfc', 'all'];
+	// const subreddits = ['soccer', 'videos', 'liverpoolfc', 'all'];
+	const subreddits = ['soccer', 'videos', 'liverpoolfc'];
 
 	subreddits.forEach((subreddit, index) => {
 		if(!oldRes[index]) {
