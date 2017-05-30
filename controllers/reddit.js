@@ -95,8 +95,11 @@ async function handleLinkInUrl(item) {
 }
 
 async function postComment(streamableUrl, item) {
+	console.log('creating comment');
 	const commentText = createComment(streamableUrl, item);
+	console.log(`created commentText: ${!!commentText}`);
 	const comment = await item.reply(commentText);
+	console.log(`Comment name: ${comment.name}`);
 	const { name, ups } = comment;
 	return new Comment({
 		name,
