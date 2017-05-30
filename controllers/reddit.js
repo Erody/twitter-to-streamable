@@ -32,7 +32,6 @@ async function getNewSubmissions(end) {
 			.getNew()
 			.then(res => {
 				const newRes = difference(oldRes[index], res, 'name');
-				console.log(`[${subreddit}] New submissions: ${newRes.length}`);
 				end(null, newRes);
 				oldRes[index] = res;
 			})
@@ -147,7 +146,7 @@ function getUrlsFromMessageBody(body) {
 }
 
 const submissionPolling = AsyncPolling(getNewSubmissions, 3000); // 3 seconds
-const messagePolling = AsyncPolling(getMessages, 120000); // 2 minutes
+const messagePolling = AsyncPolling(getMessages, 20000); // 20 seconds
 
 submissionPolling.on('run', () => console.log('Submission polling is running...'));
 // submissionPolling.on('start', () => console.log('Polling submissions...'));
@@ -185,7 +184,7 @@ submissionPolling.on('result', res => {
 });
 
 messagePolling.on('run', () => console.log('Message polling is running...'));
-// messagePolling.on('start', () => console.log('Polling messages...'));
+messagePolling.on('start', () => console.log('Polling messages...'));
 messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
 	console.log(`Unread messages: ${res.length}`);
