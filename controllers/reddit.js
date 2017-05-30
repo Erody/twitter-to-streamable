@@ -63,6 +63,7 @@ async function handleTwitter(item) {
 	const videoUrl = await getVideoUrl(item.url);
 	// check if tweet contained video url
 	if(videoUrl){
+		console.log('twitter link is video');
 		// upload video to streamable
 		const streamableUrl = await uploadToStreamable(item.url);
 		// on succesful upload
@@ -80,6 +81,7 @@ async function handleLinkInUrl(item) {
 	console.log('Attempting to handle mixtape or nya link');
 	// check if link is video
 	if(item.url.endsWith('.mp4')) {
+		console.log('Mixtape/nya link is video');
 		// upload video to streamable
 		const streamableUrl = await uploadToStreamable(item.url);
 		// on succesful upload
@@ -186,7 +188,7 @@ messagePolling.on('run', () => console.log('Message polling is running...'));
 // messagePolling.on('start', () => console.log('Polling messages...'));
 messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
-	console.log(`Unred messages: ${res.length}`);
+	console.log(`Unread messages: ${res.length}`);
 	res.forEach(item => {
 		handleNewMessage(item);
 	});
