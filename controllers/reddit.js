@@ -31,7 +31,9 @@ async function getNewSubmissions(end) {
 			.getSubreddit(subreddit)
 			.getNew()
 			.then(res => {
+				console.log(`Polling ${subreddit}`);
 				const newRes = difference(oldRes[index], res, 'name');
+				console.log(`New submissions: ${newRes.length}`);
 				end(null, newRes);
 				oldRes[index] = res;
 			})
@@ -183,6 +185,7 @@ messagePolling.on('run', () => console.log('Message polling is running...'));
 // messagePolling.on('start', () => console.log('Polling messages...'));
 messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
+	console.log(`Unred messages: ${res.length}`);
 	res.forEach(item => {
 		handleNewMessage(item);
 	});
