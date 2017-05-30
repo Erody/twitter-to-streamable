@@ -69,9 +69,9 @@ async function handleTwitter(item) {
 			console.log(streamableUrl);
 			// post comment on reddit with streamable url
 			const comment = await postComment(streamableUrl, item);
-			console.log(`Comment posted - ${comment.name}`);
-			// save submission and comment to database
-			saveMetadata(comment, item);
+			// console.log(`Comment posted - ${comment.name}`);
+			// // save submission and comment to database
+			// saveMetadata(comment, item);
 		}
 	}
 }
@@ -87,9 +87,9 @@ async function handleLinkInUrl(item) {
 		if(streamableUrl) {
 			// post comment on reddit with streamable url
 			const comment = await postComment(streamableUrl, item);
-			console.log(`Comment posted - ${comment.name}`);
-			// save submission and comment to database
-			saveMetadata(comment, item);
+			// console.log(`Comment posted - ${comment.name}`);
+			// // save submission and comment to database
+			// saveMetadata(comment, item);
 		}
 	}
 }
@@ -100,11 +100,11 @@ async function postComment(streamableUrl, item) {
 	console.log(`created commentText: ${!!commentText}`);
 	const comment = await item.reply(commentText);
 	console.log(`Comment name: ${comment.name}`);
-	const { name, ups } = comment;
-	return new Comment({
-		name,
-		upvotes: ups
-	});
+	// const { name, ups } = comment;
+	// return new Comment({
+	// 	name,
+	// 	upvotes: ups
+	// });
 }
 
 function getMessages(end) {
