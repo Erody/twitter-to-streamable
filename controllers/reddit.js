@@ -15,7 +15,6 @@ const reddit = new Snoowrap({
 	password: process.env.REDDIT_PASS
 });
 reddit.config({
-	requestDelay: 2000,
 	continueAfterRatelimitError: true,
 });
 
@@ -57,7 +56,6 @@ async function getNewSubmissions(end) {
 }
 
 async function handleTwitter(item) {
-	console.log('Attempting to handle twitter link');
 	// get videoUrl from tweetUrl
 	const videoUrl = await getVideoUrl(item.url);
 	// check if tweet contained video url
@@ -146,7 +144,7 @@ function getUrlsFromMessageBody(body) {
 	return body.match(regex);
 }
 
-const submissionPolling = AsyncPolling(getNewSubmissions, 3000); // 3 seconds
+const submissionPolling = AsyncPolling(getNewSubmissions, 5000); // 5 seconds
 const messagePolling = AsyncPolling(getMessages, 20000); // 20 seconds
 
 submissionPolling.on('run', () => console.log('Submission polling is running...'));
