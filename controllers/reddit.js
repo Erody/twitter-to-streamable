@@ -21,6 +21,10 @@ reddit.config({
 
 let oldRes = [];
 async function getNewSubmissions(end) {
+	const subreddits = ['soccer', 'videos', 'liverpoolfc', 'all'];
+
+
+
 	reddit
 		// new submissions on all subreddits (test /r/all, otherwise just take a list of popular ones)
 		// .getSubreddit('testingMyBotsAndStuff')
@@ -91,6 +95,7 @@ function getMessages(end) {
 }
 
 async function handleNewMessage(item) {
+	item.markAsRead();
 	const { body, name } = item;
 	const urls = getUrlsFromMessageBody(body);
 	if(!urls) return;
@@ -103,13 +108,11 @@ async function handleNewMessage(item) {
 			if(videoUrl) {
 				const streamableUrl = await uploadToStreamable(videoUrl);
 				await postComment(streamableUrl, item);
-				item.markAsRead();
 				console.log(`Replied - ${item.name}`);
 			}
 		} else if(domain === 'my.mixtape.moe' || domain === 'u.nya.is') {
 			const streamableUrl = await uploadToStreamable(url);
 			await postComment(streamableUrl, item);
-			item.markAsRead();
 			console.log(`Replied - ${item.name}`);
 		}
 	});
@@ -125,7 +128,7 @@ function getUrlsFromMessageBody(body) {
 	return body.match(regex);
 }
 
-const submissionPolling = AsyncPolling(getNewSubmissions, 3000); // 2 seconds
+const submissionPolling = AsyncPolling(getNewSubmissions, 3000); // 3 seconds
 const messagePolling = AsyncPolling(getMessages, 120000); // 2 minutes
 
 submissionPolling.on('run', () => console.log('Submission polling is running...'));
@@ -169,6 +172,7 @@ messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
 	console.log(`Unread messages amount: ${res.length}`);
 	res.forEach(item => {
+		console.log(item);
 		handleNewMessage(item);
 	});
 });
