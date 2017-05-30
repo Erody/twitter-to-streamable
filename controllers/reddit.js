@@ -69,7 +69,8 @@ async function handleTwitter(item) {
 			console.log(streamableUrl);
 			// post comment on reddit with streamable url
 			postComment(streamableUrl, item)
-				.then(res => console.log(`Comment posted - ${res.name}`));
+				.then(res => console.log(`Comment posted`))
+				.catch(err => console.error(err));
 			// const comment = await postComment(streamableUrl, item);
 			// console.log(`Comment posted - ${comment.name}`);
 			// // save submission and comment to database
@@ -89,7 +90,8 @@ async function handleLinkInUrl(item) {
 		if(streamableUrl) {
 			// post comment on reddit with streamable url
 			postComment(streamableUrl, item)
-				.then(res => console.log(`Comment posted - ${res.name}`));
+				.then(res => console.log(`Comment posted`))
+				.catch(err => console.error(err));
 			// const comment = await postComment(streamableUrl, item);
 			// console.log(`Comment posted - ${comment.name}`);
 			// // save submission and comment to database
