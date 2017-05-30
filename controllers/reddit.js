@@ -67,6 +67,7 @@ async function handleTwitter(item) {
 		const streamableUrl = await uploadToStreamable(item.url);
 		// on succesful upload
 		if(streamableUrl) {
+			console.log(streamableUrl);
 			// post comment on reddit with streamable url
 			const comment = await postComment(streamableUrl, item);
 			console.log(`Comment posted - ${comment.name}`);

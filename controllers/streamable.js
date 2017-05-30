@@ -8,6 +8,7 @@ exports.uploadToStreamable = async (videoUrl) => {
 		const resString =  await request.get(url); // shitty ass api returns a string instead of json...
 		const res = JSON.parse(resString);
 		if(res.status !== 1) return;
+		console.log(`Uploaded to streamable: ${res.shortcode}`);
 		return `https://streamable.com/${res.shortcode}`
 	} catch (err) {
 		console.error(`[Streamable Error] ${err.message}`);
