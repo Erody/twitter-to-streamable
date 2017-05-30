@@ -23,24 +23,37 @@ let oldRes = [];
 async function getNewSubmissions(end) {
 	const subreddits = ['soccer', 'videos', 'liverpoolfc', 'all'];
 
+	subreddits.forEach((subreddit, index) => {
+		if(!oldRes[index]) {
+			oldRes[index] = [];
+		}
+		reddit
+			.getSubreddit(subreddit)
+			.getNew()
+			.then(res => {
+				const newRes = difference(oldRes[index], res, 'name');
+				end(null, newRes);
+				oldRes[index] = res;
+			})
+			.catch(err => end(err));
+	});
 
-
-	reddit
-		// new submissions on all subreddits (test /r/all, otherwise just take a list of popular ones)
-		// .getSubreddit('testingMyBotsAndStuff')
-		.getSubreddit('all')
-		.getNew()
-		.then(res => {
-			// check which submissions are new
-			const newRes = difference(oldRes, res, 'name');
-			// only send new submissions to end()
-			end(null, newRes);
-			// save old response to check against
-			oldRes = res;
-		})
-		.catch(err => {
-			end(err);
-		})
+	// reddit
+	// 	// new submissions on all subreddits (test /r/all, otherwise just take a list of popular ones)
+	// 	// .getSubreddit('testingMyBotsAndStuff')
+	// 	.getSubreddit('all')
+	// 	.getNew()
+	// 	.then(res => {
+	// 		// check which submissions are new
+	// 		const newRes = difference(oldRes, res, 'name');
+	// 		// only send new submissions to end()
+	// 		end(null, newRes);
+	// 		// save old response to check against
+	// 		oldRes = res;
+	// 	})
+	// 	.catch(err => {
+	// 		end(err);
+	// 	})
 }
 
 async function handleTwitter(item) {
@@ -162,7 +175,7 @@ submissionPolling.on('result', res => {
 			default:
 				// handle default
 		}
-		// console.log(`[${subreddit_name_prefixed}] ${title}`)
+		console.log(`[${subreddit_name_prefixed}] ${title}`)
 	})
 });
 
@@ -170,9 +183,7 @@ messagePolling.on('run', () => console.log('Message polling is running...'));
 // messagePolling.on('start', () => console.log('Polling messages...'));
 messagePolling.on('error', err => console.error(err));
 messagePolling.on('result', res => {
-	console.log(`Unread messages amount: ${res.length}`);
 	res.forEach(item => {
-		console.log(item);
 		handleNewMessage(item);
 	});
 });
