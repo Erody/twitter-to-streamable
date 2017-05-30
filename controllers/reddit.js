@@ -68,7 +68,9 @@ async function handleTwitter(item) {
 		if(streamableUrl) {
 			console.log(streamableUrl);
 			// post comment on reddit with streamable url
-			const comment = await postComment(streamableUrl, item);
+			postComment(streamableUrl, item)
+				.then(res => console.log(`Comment posted - ${res.name}`));
+			// const comment = await postComment(streamableUrl, item);
 			// console.log(`Comment posted - ${comment.name}`);
 			// // save submission and comment to database
 			// saveMetadata(comment, item);
@@ -86,7 +88,9 @@ async function handleLinkInUrl(item) {
 		// on succesful upload
 		if(streamableUrl) {
 			// post comment on reddit with streamable url
-			const comment = await postComment(streamableUrl, item);
+			postComment(streamableUrl, item)
+				.then(res => console.log(`Comment posted - ${res.name}`));
+			// const comment = await postComment(streamableUrl, item);
 			// console.log(`Comment posted - ${comment.name}`);
 			// // save submission and comment to database
 			// saveMetadata(comment, item);
