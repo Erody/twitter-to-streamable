@@ -15,6 +15,7 @@ const reddit = new Snoowrap({
 	password: process.env.REDDIT_PASS
 });
 reddit.config({
+	requestDelay: 2000,
 	continueAfterRatelimitError: true,
 });
 
@@ -144,7 +145,7 @@ function getUrlsFromMessageBody(body) {
 	return body.match(regex);
 }
 
-const submissionPolling = AsyncPolling(getNewSubmissions, 5000); // 5 seconds
+const submissionPolling = AsyncPolling(getNewSubmissions, 5000); // 3 seconds
 const messagePolling = AsyncPolling(getMessages, 20000); // 20 seconds
 
 submissionPolling.on('run', () => console.log('Submission polling is running...'));
