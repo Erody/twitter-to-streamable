@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Comment = mongoose.model('Comment');
-const Submission = mongoose.model('Submission');
 
 exports.saveMetadata = (comment, item) => {
 	const { name, title, subreddit, created_utc, permalink, ups } = item;
@@ -56,4 +55,10 @@ exports.difference = (oldArr, newArr, property) => {
 	return newArr.filter(obj => {
 		return !names.includes(obj[property]);
 	})
+};
+
+exports.getUrlsFromString = (string) => {
+	// search for url
+	const regex = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm;
+	return string.match(regex);
 };

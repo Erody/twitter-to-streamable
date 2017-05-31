@@ -7,13 +7,20 @@ const commentSchema = new mongoose.Schema({
 	},
 	name: {
 		type: String,
-		required: 'You must supply a name.'
+		required: 'You must supply a name.',
+		unique: true
 	},
 	upvotes: Number,
 	submission: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'Submission'
+		ref: 'Parent'
+	},
+	replied: Boolean,
+	streamableUrl: {
+		type: String,
+		required: 'You must suplly a streamable url'
 	}
 });
+
 
 module.exports = mongoose.model('Comment', commentSchema);

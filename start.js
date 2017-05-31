@@ -13,8 +13,9 @@ mongoose.connection.on('error', (err) => {
 
 // import all of our models
 require('./models/Comment');
-require('./models/Submission');
+require('./models/Parent');
 
+require('./controllers/poll');
 require('./controllers/reddit');
 
 
